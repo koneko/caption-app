@@ -1,6 +1,7 @@
 const app = new PIXI.Application()
 let prepared = false
 let barSize = 50; // px
+let loadedImage = null
 document.querySelector("div.canvas").appendChild(app.view);
 
 function setWidth (width) {
@@ -10,12 +11,18 @@ function setHeight (height) {
     app.renderer.resize(app.renderer.width, height);
 }
 function loadImage (url) {
-    // loads and draw image across whole screen
-    let image = new PIXI.Sprite.from(url);
-    app.stage.addChild(image);
-    image.x = 0;
-    image.y = 0;
-    return image
+    if (loadedImage == null) {
+        // loads and draw image across whole screen
+        let image = new PIXI.Sprite.from(url);
+        app.stage.addChild(image);
+        image.x = 0;
+        image.y = 0;
+        loadedImage = image
+    } else {
+        // replace image
+        loadedImage.texture = PIXI.Texture.from(url);
+    }
+
 }
 function setImageX (x) {
     app.stage.children[0].x = x;
