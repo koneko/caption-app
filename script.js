@@ -81,7 +81,7 @@ function readyImageForCaption () {
     whiteSpace.drawRect(0, 0, canvas.width, barSize);
     app.stage.addChild(whiteSpace);
     prepared = true
-    document.querySelector("div.canvas").style.backgroundColor = "gray";
+    // document.querySelector("div.canvas").style.backgroundColor = "gray";
 }
 
 function setTopCaptionText (text) {
