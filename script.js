@@ -1,8 +1,21 @@
 const app = new PIXI.Application()
 let prepared = false
-let barSize = 50; // px
+let barSize = 65; // px
 let loadedImage = null
+let topCaption = null
+let botCaption = null
 document.querySelector("div.canvas").appendChild(app.view);
+
+let options = {
+    fontFamily: 'Impact',
+    fontSize: 40,
+    fill: '#000000',
+    stroke: "white",
+    strokeThickness: 5,
+    align: 'center',
+    wordWrap: true,
+    wordWrapWidth: app.renderer.width
+}
 
 function setWidth (width) {
     app.renderer.resize(width, app.renderer.height);
@@ -36,19 +49,8 @@ function imageToCanvas () {
     let image = app.stage.children[0];
     let width = app.renderer.width;
     let height = app.renderer.height;
-    let ratio = width / height;
-    let imageRatio = image.width / image.height;
-    if (ratio > imageRatio) {
-        image.width = width;
-        image.height = width / imageRatio;
-    }
-    else {
-        image.height = height;
-        image.width = height * imageRatio;
-    }
-    image.x = (width - image.width) / 2;
-    image.y = (height - image.height) / 2;
-
+    image.width = width;
+    image.height = height;
 }
 
 function canvasToImage () {
@@ -65,6 +67,7 @@ function canvasToImage () {
 }
 
 function readyImageForCaption () {
+    if (prepared == true) return
     let parent = document.querySelector("div.controls");
     let image = app.stage.children[0];
     let canvas = app.renderer;
@@ -78,29 +81,31 @@ function readyImageForCaption () {
     whiteSpace.drawRect(0, 0, canvas.width, barSize);
     app.stage.addChild(whiteSpace);
     prepared = true
-    createCaptionTextBox(parent)
+    document.querySelector("div.canvas").style.backgroundColor = "gray";
 }
 
-function setCaptionText (text) {
-    console.log(app.stage.children)
+function setTopCaptionText (text) {
     // if text already exists, remove it
-    if (app.stage.children[2]) {
-        app.stage.removeChild(app.stage.children[2]);
+    if (topCaption != null) {
+        app.stage.removeChild(topCaption);
     }
-    let caption = new PIXI.Text(text, {
-        fontFamily: 'Impact',
-        fontSize: 40,
-        fill: '#000000',
-        stroke: "white",
-        strokeThickness: 5,
-        align: 'center',
-        wordWrap: true,
-        wordWrapWidth: app.renderer.width
-    });
+    topCaption = new PIXI.Text(text, options);
     // set the position to the middle of the screen
-    caption.x = (app.renderer.width - caption.width) / 2;
-    caption.y = 0
-    app.stage.addChild(caption);
+    topCaption.x = (app.renderer.width - topCaption.width) / 2;
+    topCaption.y = 0
+    app.stage.addChild(topCaption);
+}
+
+function setBotCaptionText (text) {
+    // if text already exists, remove it
+    if (botCaption != null) {
+        app.stage.removeChild(botCaption);
+    }
+    botCaption = new PIXI.Text(text, options);
+    // set the position to the middle of the screen
+    botCaption.x = (app.renderer.width - botCaption.width) / 2;
+    botCaption.y = app.renderer.height - botCaption.height;
+    app.stage.addChild(botCaption);
 }
 
 function addControls () {
@@ -108,11 +113,13 @@ function addControls () {
     createResetBox(parent)
     createWidthBox(parent)
     createHeightBox(parent)
-    createURLBox(parent)
     createXBox(parent)
     createYBox(parent)
+    createURLBox(parent)
     createCanvasControlsBox(parent)
     createCaptionPrepBox(parent)
+    createTopCaptionTextBox(parent)
+    createBotCaptionTextBox(parent)
 }
 
 function createWidthBox (parent) {
@@ -243,7 +250,7 @@ function createCaptionPrepBox (parent) {
     parent = captionPrepDiv
     // add input
     let captionPrepButton = document.createElement("button");
-    captionPrepButton.innerHTML = "Prepare Caption";
+    captionPrepButton.innerHTML = "White Caption Border";
     captionPrepButton.onclick = function () {
         readyImageForCaption()
         captionPrepDiv.remove()
@@ -251,13 +258,13 @@ function createCaptionPrepBox (parent) {
     captionPrepDiv.appendChild(captionPrepButton);
 }
 
-function createCaptionTextBox (parent) {
+function createTopCaptionTextBox (parent) {
     let captionTextDiv = document.createElement("div");
     parent.appendChild(captionTextDiv)
     parent = captionTextDiv
     // add label
     let captionTextLabel = document.createElement("label");
-    captionTextLabel.innerHTML = "Caption Text: ";
+    captionTextLabel.innerHTML = "Top Text: ";
     captionTextDiv.appendChild(captionTextLabel);
     // add input
     let captionTextbox = document.createElement("input");
@@ -265,7 +272,25 @@ function createCaptionTextBox (parent) {
     captionTextbox.value = "";
     captionTextbox.style.placeholder = "Enter text here";
     captionTextbox.onchange = function () {
-        setCaptionText(this.value);
+        setTopCaptionText(this.value);
+    }
+    captionTextDiv.appendChild(captionTextbox);
+}
+function createBotCaptionTextBox (parent) {
+    let captionTextDiv = document.createElement("div");
+    parent.appendChild(captionTextDiv)
+    parent = captionTextDiv
+    // add label
+    let captionTextLabel = document.createElement("label");
+    captionTextLabel.innerHTML = "Bottom Text: ";
+    captionTextDiv.appendChild(captionTextLabel);
+    // add input
+    let captionTextbox = document.createElement("input");
+    captionTextbox.type = "text";
+    captionTextbox.value = "";
+    captionTextbox.style.placeholder = "Enter text here";
+    captionTextbox.onchange = function () {
+        setBotCaptionText(this.value);
     }
     captionTextDiv.appendChild(captionTextbox);
 }
