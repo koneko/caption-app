@@ -108,6 +108,17 @@ function setBotCaptionText (text) {
     app.stage.addChild(botCaption);
 }
 
+function downloadImage () {
+    app.renderer.extract.canvas(app.stage).toBlob((b) => {
+        const a = document.createElement('a');
+        document.body.append(a);
+        a.download = 'screenshot';
+        a.href = URL.createObjectURL(b);
+        a.click();
+        a.remove();
+    }, 'image/png');
+}
+
 function addControls () {
     let parent = document.querySelector("div.controls");
     createResetBox(parent)
@@ -120,6 +131,7 @@ function addControls () {
     createCaptionPrepBox(parent)
     createTopCaptionTextBox(parent)
     createBotCaptionTextBox(parent)
+    createDownloadBox(parent)
 }
 
 function createWidthBox (parent) {
@@ -293,6 +305,18 @@ function createBotCaptionTextBox (parent) {
         setBotCaptionText(this.value);
     }
     captionTextDiv.appendChild(captionTextbox);
+}
+function createDownloadBox (parent) {
+    let downloadDiv = document.createElement("div");
+    parent.appendChild(downloadDiv)
+    parent = downloadDiv
+    // add input
+    let downloadButton = document.createElement("button");
+    downloadButton.innerHTML = "Download";
+    downloadButton.onclick = function () {
+        downloadImage();
+    }
+    downloadDiv.appendChild(downloadButton);
 }
 
 addControls()
