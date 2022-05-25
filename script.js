@@ -26,16 +26,19 @@ function setHeight (height) {
 function loadImage (url) {
     if (loadedImage == null) {
         // loads and draw image across whole screen
-        let image = new PIXI.Sprite.from(url);
-        app.stage.addChild(image);
-        image.x = 0;
-        image.y = 0;
-        loadedImage = image
+        loadedImage = new PIXI.Sprite.from(url);
+        app.stage.addChild(loadedImage);
+        loadedImage.x = 0;
+        loadedImage.y = 0;
     } else {
         // replace image
         loadedImage.texture = PIXI.Texture.from(url);
     }
-
+    if (document.getElementById("width-box") && document.getElementById("height-box")) {
+        console.log(loadedImage.width, loadedImage.height)
+        document.getElementById("width-box").value = loadedImage.width;
+        document.getElementById("height-box").value = loadedImage.height;
+    }
 }
 function setImageX (x) {
     app.stage.children[0].x = x;
@@ -112,26 +115,41 @@ function downloadImage () {
     app.renderer.extract.canvas(app.stage).toBlob((b) => {
         const a = document.createElement('a');
         document.body.append(a);
-        a.download = 'screenshot';
+        a.download = 'caption-app';
         a.href = URL.createObjectURL(b);
         a.click();
         a.remove();
     }, 'image/png');
 }
 
+function setImageWidth (width) {
+    loadedImage.width = width;
+}
+
+function setImageHeight (height) {
+    loadedImage.height = height;
+}
+
+function updateImageSizeBox () {
+    document.getElementById("width-box").value = app.stage.children[0].width
+    document.getElementById("height-box").value = loadedImage.height
+
+}
+
 function addControls () {
     let parent = document.querySelector("div.controls");
     createResetBox(parent)
+    createURLBox(parent)
     createWidthBox(parent)
     createHeightBox(parent)
     createXBox(parent)
     createYBox(parent)
-    createURLBox(parent)
     createCanvasControlsBox(parent)
     createCaptionPrepBox(parent)
     createTopCaptionTextBox(parent)
     createBotCaptionTextBox(parent)
     createDownloadBox(parent)
+    updateImageSizeBox()
 }
 
 function createWidthBox (parent) {
@@ -182,7 +200,7 @@ function createURLBox (parent) {
     let urlbox = document.createElement("input");
     urlbox.type = "text";
     urlbox.value = "https://hub.koneko.link/cdn/icons/black.png";
-    loadImage(urlbox.value);
+    loadImage("https://hub.koneko.link/cdn/icons/black.png");
     urlbox.onchange = function () {
         loadImage(this.value);
     }
@@ -205,6 +223,15 @@ function createXBox (parent) {
         setImageX(this.value);
     }
     xDiv.appendChild(xbox);
+    //add width input
+    let widthbox = document.createElement("input");
+    widthbox.type = "number";
+    // widthbox.value = loadedImage.width;
+    widthbox.id = "width-box"
+    widthbox.onchange = function () {
+        setImageWidth(this.value);
+    }
+    xDiv.appendChild(widthbox);
 }
 
 // create ybox function
@@ -224,6 +251,15 @@ function createYBox (parent) {
         setImageY(this.value);
     }
     yDiv.appendChild(ybox);
+    //add height input
+    let heightbox = document.createElement("input");
+    heightbox.type = "number";
+    // heightbox.value = loadedImage.height;
+    heightbox.id = "height-box"
+    heightbox.onchange = function () {
+        setImageHeight(this.value);
+    }
+    yDiv.appendChild(heightbox);
 }
 
 function createCanvasControlsBox (parent) {
