@@ -4,6 +4,7 @@ let barSize = 65; // px
 let loadedImage = null
 let topCaption = null
 let botCaption = null
+let exist = null
 document.querySelector("div.canvas").appendChild(app.view);
 
 let options = {
@@ -33,11 +34,7 @@ function loadImage (url) {
     } else {
         // replace image
         loadedImage.texture = PIXI.Texture.from(url);
-    }
-    if (document.getElementById("width-box") && document.getElementById("height-box")) {
-        console.log(loadedImage.width, loadedImage.height)
-        document.getElementById("width-box").value = loadedImage.width;
-        document.getElementById("height-box").value = loadedImage.height;
+        updateImageSizeBox()
     }
 }
 function setImageX (x) {
@@ -131,9 +128,15 @@ function setImageHeight (height) {
 }
 
 function updateImageSizeBox () {
+    if (exist == null) return
     document.getElementById("width-box").value = app.stage.children[0].width
-    document.getElementById("height-box").value = loadedImage.height
+    document.getElementById("height-box").value = app.stage.children[0].height
+}
 
+function updateCanvasSizeBox () {
+    if (exist == null) return
+    document.getElementById("canvas-width-box").value = app.renderer.width
+    document.getElementById("canvas-height-box").value = app.renderer.height
 }
 
 function addControls () {
@@ -164,6 +167,7 @@ function createWidthBox (parent) {
     let widthbox = document.createElement("input");
     widthbox.type = "number";
     widthbox.value = app.renderer.width;
+    widthbox.id = "canvas-width-box";
     widthbox.onchange = function () {
         setWidth(this.value);
     }
@@ -182,6 +186,7 @@ function createHeightBox (parent) {
     let heightbox = document.createElement("input");
     heightbox.type = "number";
     heightbox.value = app.renderer.height;
+    heightbox.id = "canvas-height-box";
     heightbox.onchange = function () {
         setHeight(this.value);
     }
@@ -203,6 +208,7 @@ function createURLBox (parent) {
     loadImage("https://hub.koneko.link/cdn/icons/black.png");
     urlbox.onchange = function () {
         loadImage(this.value);
+        updateImageSizeBox()
     }
     urlDiv.appendChild(urlbox);
 }
@@ -260,6 +266,7 @@ function createYBox (parent) {
         setImageHeight(this.value);
     }
     yDiv.appendChild(heightbox);
+    exist = true
 }
 
 function createCanvasControlsBox (parent) {
@@ -268,7 +275,10 @@ function createCanvasControlsBox (parent) {
     canvasControlsDiv.classList.add("canvasControls");
     let canvasToImageButton = document.createElement("button");
     canvasToImageButton.innerHTML = "Canvas to Image";
-    canvasToImageButton.onclick = canvasToImage;
+    canvasToImageButton.onclick = function () {
+        canvasToImage();
+        updateCanvasSizeBox()
+    }
     canvasControlsDiv.appendChild(canvasToImageButton);
     let imageToCanvasButton = document.createElement("button");
     imageToCanvasButton.innerHTML = "Image to Canvas";
