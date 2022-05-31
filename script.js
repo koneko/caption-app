@@ -119,6 +119,17 @@ function downloadImage () {
     }, 'image/png');
 }
 
+function uploadImage () {
+    let file = document.getElementById("upload-button").files[0]
+    if (file == null) return
+    let reader = new FileReader()
+    reader.onload = function (e) {
+        loadImage(e.target.result)
+    }
+    reader.readAsDataURL(file)
+    updateImageSizeBox()
+}
+
 function setImageWidth (width) {
     loadedImage.width = width;
 }
@@ -151,6 +162,7 @@ function addControls () {
     createCaptionPrepBox(parent)
     createTopCaptionTextBox(parent)
     createBotCaptionTextBox(parent)
+    createUploadBox(parent)
     createDownloadBox(parent)
     updateImageSizeBox()
 }
@@ -363,6 +375,24 @@ function createDownloadBox (parent) {
         downloadImage();
     }
     downloadDiv.appendChild(downloadButton);
+}
+function createUploadBox (parent) {
+    let uploadDiv = document.createElement("div");
+    parent.appendChild(uploadDiv)
+    parent = uploadDiv
+    //add label
+    let uploadLabel = document.createElement("label");
+    uploadLabel.innerHTML = "Upload Image: ";
+    uploadDiv.appendChild(uploadLabel);
+    // add input
+    let uploadButton = document.createElement("input");
+    uploadButton.type = "file";
+    uploadButton.accept = "image/*";
+    uploadButton.id = "upload-button"
+    uploadButton.onchange = function () {
+        uploadImage();
+    }
+    uploadDiv.appendChild(uploadButton);
 }
 
 addControls()
