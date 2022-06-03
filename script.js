@@ -3,15 +3,19 @@ let prepared = false
 let barSize = 65; // px
 let loadedImage = null
 let topCaption = null
+let topCaptionText = null
 let botCaption = null
+let botCaptionText = null
 let exist = null
+let fill = '#000000'
+let stroke = "white"
 document.querySelector("div.canvas").appendChild(app.view);
 
 let options = {
     fontFamily: 'Impact',
     fontSize: 40,
-    fill: '#000000',
-    stroke: "white",
+    fill: fill,
+    stroke: stroke,
     strokeThickness: 5,
     align: 'center',
     wordWrap: true,
@@ -38,10 +42,10 @@ function loadImage (url) {
     }
 }
 function setImageX (x) {
-    app.stage.children[0].x = x;
+    loadedImage.x = x;
 }
 function setImageY (y) {
-    app.stage.children[0].y = y;
+    loadedImage.y = y;
 }
 
 function imageToCanvas () {
@@ -64,6 +68,20 @@ function canvasToImage () {
     //set image x and y
     image.x = 0;
     image.y = 0;
+}
+
+function reverseColors () {
+    //fill, stroke
+    if (fill == '#000000') {
+        fill = 'white';
+        stroke = '#000000';
+    } else {
+        fill = '#000000';
+        stroke = 'white';
+    }
+    //readd text
+    if (topCaption != null) setTopCaptionText(topCaptionText)
+    if (botCaption != null) setBotCaptionText(botCaptionText)
 }
 
 function readyImageForCaption () {
@@ -93,6 +111,7 @@ function setTopCaptionText (text) {
     // set the position to the middle of the screen
     topCaption.x = (app.renderer.width - topCaption.width) / 2;
     topCaption.y = 0
+    topCaptionText = text
     app.stage.addChild(topCaption);
 }
 
@@ -105,6 +124,7 @@ function setBotCaptionText (text) {
     // set the position to the middle of the screen
     botCaption.x = (app.renderer.width - botCaption.width) / 2;
     botCaption.y = app.renderer.height - botCaption.height;
+    botCaptionText = text
     app.stage.addChild(botCaption);
 }
 
@@ -140,8 +160,8 @@ function setImageHeight (height) {
 
 function updateImageSizeBox () {
     if (exist == null) return
-    document.getElementById("width-box").value = app.stage.children[0].width
-    document.getElementById("height-box").value = app.stage.children[0].height
+    document.getElementById("width-box").value = loadedImage.width
+    document.getElementById("height-box").value = loadedImage.height
 }
 
 function updateCanvasSizeBox () {
@@ -162,6 +182,7 @@ function addControls () {
     createCaptionPrepBox(parent)
     createTopCaptionTextBox(parent)
     createBotCaptionTextBox(parent)
+    createReverseColorsBox(parent)
     createUploadBox(parent)
     createDownloadBox(parent)
     updateImageSizeBox()
@@ -393,6 +414,18 @@ function createUploadBox (parent) {
         uploadImage();
     }
     uploadDiv.appendChild(uploadButton);
+}
+function createReverseColorsBox (parent) {
+    let reverseColorsDiv = document.createElement("div");
+    parent.appendChild(reverseColorsDiv)
+    parent = reverseColorsDiv
+    // add input
+    let reverseColorsButton = document.createElement("button");
+    reverseColorsButton.innerHTML = "Reverse Text Colors";
+    reverseColorsButton.onclick = function () {
+        reverseColors();
+    }
+    reverseColorsDiv.appendChild(reverseColorsButton);
 }
 
 addControls()
