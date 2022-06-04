@@ -75,9 +75,13 @@ function reverseColors () {
     if (fill == '#000000') {
         fill = 'white';
         stroke = '#000000';
+        options.fill = 'white';
+        options.stroke = '#000000';
     } else {
         fill = '#000000';
         stroke = 'white';
+        options.fill = '#000000';
+        options.stroke = 'white';
     }
     //readd text
     if (topCaption != null) setTopCaptionText(topCaptionText)
